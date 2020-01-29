@@ -15,26 +15,26 @@ router.use(
 //en tant qu'utilisateur, je veux pouvoir créer une nouvelle serie.
 router.post('/', (req, res) => {
   const newShow = req.body;
-  connection.query('INSERT INTO playlist SET ?', newSong, (err, results) => {
+  connection.query('INSERT INTO showtv SET ?', newShow, (err, results) => {
     if (err) {
       console.log(err);
-      res.status(500).send('Error saving a new song');
+      res.status(500).send('Error saving a new show');
     } else {
       res.sendStatus(200);
     }
   });
 });
-//en tant qu'utilisateur, je veux pouvoir consulter une playlist en renseignant son id dans l'url (juste ses données propres, pas les pistes associées).
+//en tant qu'utilisateur, je veux pouvoir consulter une serie en renseignant son id dans l'url .
 
-router.get('/:playlistId', (req, res) => {
-  const getOnePlaylist = Number(req.params.playlistId);
+router.get('/:showId', (req, res) => {
+  const getOneShow = Number(req.params.showId);
   connection.query(
-    'SELECT * FROM playlist WHERE id = ?;',
-    [getOnePlaylist],
+    'SELECT * FROM showtv WHERE id = ?;',
+    [getOneShow],
     (err, results) => {
       console.log(err);
       if (err) {
-        res.status(500).send('Error getting this particulary playlist');
+        res.status(500).send('Error getting this particulary show');
       } else {
         res.json(results);
       }
@@ -45,11 +45,11 @@ router.get('/:playlistId', (req, res) => {
 //en tant qu'utilisateur, je veux pouvoir supprimer une playlist.
 
 router.delete('/:id', (req, res) => {
-  const id_song = req.params.id;
-  connection.query('DELETE FROM playlist WHERE id=?', [id_song], err => {
+  const idShow = req.params.id;
+  connection.query('DELETE FROM showtv WHERE id=?', [idShow], err => {
     if (err) {
       console.log(err);
-      res.status(500).send('Error deleting playlist');
+      res.status(500).send('Error deleting show');
     } else {
       res.sendStatus(200);
     }
@@ -60,33 +60,28 @@ router.delete('/:id', (req, res) => {
 
 router.put('/:id', (req, res) => {
   const newdata = req.body;
-  const id_playlist = req.params.id;
-  connection.query(
-    'UPDATE playlist SET ? WHERE id=?',
-    [newdata, id_playlist],
-    err => {
-      if (err) {
-        console.log(err);
-        res.status(500).send('Error updating playlist');
-      } else {
-        res.sendStatus(200);
-      }
-    },
-  );
+  const idShow = req.params.id;
+  connection.query('UPDATE showtv SET ? WHERE id=?', [newdata, idShow], err => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error updating show');
+    } else {
+      res.sendStatus(200);
+    }
+  });
 });
 
 router.get('/', (req, res) => {
-  let sql = 'SELECT * FROM playlist';
+  let sql = 'SELECT * FROM showtv';
   const sqlValues = [];
 
-  //GET (light) - Récupération de quelques champs spécifiques (id, names, dates, etc...)
-  if (req.query.genre) {
-    sql += ' WHERE genre =?';
+  if (req.query.note_imdb) {
+    sql += ' WHERE note_imdb > ?';
     sqlValues.push(req.query.genre);
   }
 
   if (req.query.name) {
-    sql += ' WHERE name =?';
+    sql += ' WHERE name = ?';
     sqlValues.push(req.query.name);
   }
 
